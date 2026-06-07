@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ຄຳຕອບ Flutter — 120 ຂໍ້</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d1117;
+    --bg-soft:#161b22;
+    --card:#1a2029;
+    --card-hi:#212a35;
+    --line:#2a323d;
+    --ink:#e6edf3;
+    --ink-dim:#9aa7b4;
+    --ink-faint:#6b7785;
+    --accent:#42a5f5;        /* flutter blue */
+    --accent-2:#0468d7;
+    --accent-soft:rgba(66,165,245,.14);
+    --good:#3fb950;
+    --good-soft:rgba(63,185,80,.13);
+    --code-bg:#0a0e14;
+    --warn:#e3b341;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Noto Sans Lao',system-ui,sans-serif;
+    background:
+      radial-gradient(1200px 600px at 12% -8%, rgba(66,165,245,.10), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(4,104,215,.10), transparent 55%),
+      var(--bg);
+    color:var(--ink);
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent-soft)}
+
+  /* ---------- HEADER ---------- */
+  header.hero{
+    padding:54px 24px 30px;
+    text-align:center;
+    border-bottom:1px solid var(--line);
+    position:relative;
+    overflow:hidden;
+  }
+  header.hero::before{
+    content:"";
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(var(--line) 1px,transparent 1px),
+      linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:48px 48px;
+    -webkit-mask-image:radial-gradient(circle at 50% 0%,#000,transparent 70%);
+            mask-image:radial-gradient(circle at 50% 0%,#000,transparent 70%);
+    opacity:.4;
+    pointer-events:none;
+  }
+  .badge{
+    position:relative;
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);
+    background:var(--accent-soft);
+    border:1px solid rgba(66,165,245,.3);
+    padding:6px 14px;border-radius:999px;
+    margin-bottom:20px;
+  }
+  .badge svg{width:15px;height:15px}
+  header.hero h1{
+    position:relative;
+    font-size:clamp(28px,5vw,46px);
+    font-weight:800;
+    letter-spacing:-.01em;
+    line-height:1.25;
+    background:linear-gradient(180deg,#fff,#b9d6f5);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  header.hero p.sub{
+    position:relative;
+    color:var(--ink-dim);
+    margin-top:12px;font-size:16px;
+  }
+  .stats{
+    position:relative;
+    display:flex;gap:14px;justify-content:center;flex-wrap:wrap;
+    margin-top:26px;
+  }
+  .stat{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px 22px;min-width:104px;
+  }
+  .stat b{display:block;font-family:'Space Grotesk',sans-serif;font-size:26px;color:var(--accent)}
+  .stat span{font-size:13px;color:var(--ink-faint)}
+
+  /* ---------- TOOLBAR ---------- */
+  .toolbar{
+    position:sticky;top:0;z-index:50;
+    background:rgba(13,17,23,.82);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+    padding:12px 24px;
+  }
+  .toolbar-inner{
+    max-width:880px;margin:0 auto;
+    display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+  }
+  .search{
+    flex:1;min-width:200px;
+    display:flex;align-items:center;gap:10px;
+    background:var(--bg-soft);
+    border:1px solid var(--line);
+    border-radius:11px;
+    padding:10px 14px;
+    transition:border-color .2s;
+  }
+  .search:focus-within{border-color:var(--accent)}
+  .search svg{width:18px;height:18px;color:var(--ink-faint);flex-shrink:0}
+  .search input{
+    flex:1;background:none;border:none;outline:none;
+    color:var(--ink);font-family:inherit;font-size:15px;
+  }
+  .search input::placeholder{color:var(--ink-faint)}
+  .toggle{
+    display:inline-flex;align-items:center;gap:9px;
+    background:var(--bg-soft);
+    border:1px solid var(--line);
+    border-radius:11px;
+    padding:10px 16px;cursor:pointer;user-select:none;
+    font-size:14px;color:var(--ink-dim);
+    transition:.2s;white-space:nowrap;
+  }
+  .toggle:hover{border-color:var(--accent)}
+  .toggle.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+  .switch{
+    width:36px;height:20px;border-radius:99px;background:var(--line);
+    position:relative;transition:.2s;flex-shrink:0;
+  }
+  .toggle.on .switch{background:var(--accent)}
+  .switch::after{
+    content:"";position:absolute;top:2px;left:2px;
+    width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s;
+  }
+  .toggle.on .switch::after{left:18px}
+
+  /* ---------- LAYOUT ---------- */
+  main{max-width:880px;margin:0 auto;padding:40px 24px 120px}
+
+  .section{margin-bottom:48px;scroll-margin-top:88px}
+  .section-head{
+    display:flex;align-items:center;gap:14px;
+    margin-bottom:22px;
+  }
+  .section-num{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:13px;font-weight:700;letter-spacing:.05em;
+    color:var(--bg);
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    width:42px;height:42px;border-radius:12px;
+    display:grid;place-items:center;flex-shrink:0;
+    box-shadow:0 4px 14px rgba(66,165,245,.3);
+  }
+  .section-head h2{
+    font-size:20px;font-weight:700;line-height:1.3;
+  }
+  .section-head h2 small{display:block;font-size:13px;color:var(--ink-faint);font-weight:500;margin-top:2px;letter-spacing:.02em}
+
+  /* ---------- CARDS ---------- */
+  .q{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px 24px;
+    margin-bottom:14px;
+    transition:border-color .2s,transform .2s;
+  }
+  .q:hover{border-color:#384452}
+  .q-head{display:flex;gap:14px;align-items:flex-start}
+  .q-no{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;font-size:14px;
+    color:var(--accent);
+    background:var(--accent-soft);
+    border-radius:9px;
+    min-width:34px;height:30px;padding:0 9px;
+    display:grid;place-items:center;flex-shrink:0;margin-top:2px;
+  }
+  .q-text{font-weight:600;font-size:16.5px;color:var(--ink)}
+  .q-text code{
+    font-family:'JetBrains Mono',monospace;font-size:.86em;
+    background:var(--bg-soft);padding:1px 6px;border-radius:6px;color:#9ecbff;
+  }
+  ul.opts{list-style:none;margin:16px 0 0;display:grid;gap:8px}
+  ul.opts li{
+    display:flex;gap:11px;align-items:flex-start;
+    padding:10px 13px;border-radius:10px;
+    border:1px solid transparent;
+    background:var(--bg-soft);
+    font-size:15px;color:var(--ink-dim);
+    transition:.2s;
+  }
+  ul.opts li .key{
+    font-weight:600;color:var(--ink-faint);flex-shrink:0;
+    font-family:'Space Grotesk',sans-serif;
+  }
+  ul.opts li code{font-family:'JetBrains Mono',monospace;font-size:.88em;color:#9ecbff}
+  /* reveal answer */
+  .reveal ul.opts li.correct{
+    background:var(--good-soft);
+    border-color:rgba(63,185,80,.4);
+    color:var(--ink);
+  }
+  .reveal ul.opts li.correct .key{color:var(--good)}
+  .reveal ul.opts li.correct::after{
+    content:"✓";margin-left:auto;color:var(--good);font-weight:700;flex-shrink:0;
+  }
+  .explain{
+    margin-top:14px;
+    border-left:3px solid var(--accent);
+    background:linear-gradient(90deg,var(--accent-soft),transparent);
+    padding:11px 16px;border-radius:0 10px 10px 0;
+    font-size:14.5px;color:var(--ink-dim);
+    display:none;
+  }
+  .reveal .explain{display:block}
+  .explain b{color:var(--ink)}
+  .explain code{font-family:'JetBrains Mono',monospace;font-size:.88em;background:var(--bg-soft);padding:1px 6px;border-radius:5px;color:#9ecbff}
+
+  /* hidden-mode hint */
+  .tap-hint{
+    margin-top:14px;font-size:13px;color:var(--ink-faint);
+    display:flex;align-items:center;gap:7px;
+  }
+  .reveal .tap-hint{display:none}
+
+  /* ---------- PRACTICAL ---------- */
+  .q.practical .answer{margin-top:16px;display:none}
+  .reveal .q.practical .answer{display:block}
+  pre{
+    background:var(--code-bg);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:16px 18px;
+    overflow-x:auto;
+    font-family:'JetBrains Mono',monospace;
+    font-size:13.5px;line-height:1.7;
+    color:#c9d1d9;
+    margin-top:4px;
+  }
+  pre .kw{color:#ff7b72}
+  pre .ty{color:#79c0ff}
+  pre .st{color:#a5d6ff}
+  pre .cm{color:#8b949e;font-style:italic}
+  pre .fn{color:#d2a8ff}
+  .note{
+    font-size:14.5px;color:var(--ink-dim);
+    margin-top:10px;
+  }
+  .note code{font-family:'JetBrains Mono',monospace;font-size:.88em;background:var(--bg-soft);padding:1px 6px;border-radius:5px;color:#9ecbff}
+
+  .footnote{
+    margin-top:30px;padding:16px 20px;
+    border:1px dashed var(--line);border-radius:12px;
+    background:rgba(227,179,65,.06);
+    font-size:14px;color:var(--ink-dim);
+  }
+  .footnote b{color:var(--warn)}
+
+  .empty{display:none;text-align:center;color:var(--ink-faint);padding:60px 0;font-size:16px}
+
+  /* back to top */
+  #top{
+    position:fixed;bottom:26px;right:26px;z-index:60;
+    width:48px;height:48px;border-radius:14px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    border:none;cursor:pointer;color:#fff;
+    display:grid;place-items:center;
+    box-shadow:0 8px 24px rgba(4,104,215,.4);
+    opacity:0;pointer-events:none;transition:.3s;
+  }
+  #top.show{opacity:1;pointer-events:auto}
+  #top svg{width:22px;height:22px}
+
+  @media(max-width:560px){
+    main{padding:28px 16px 110px}
+    .q{padding:18px 16px}
+    header.hero{padding:40px 18px 24px}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="badge">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14.3 0L2.3 12l3.7 3.7L21.7 0h-7.4zm.1 11.3l-6.5 6.5 3.7 3.7 3.3-3.3L21.7 12h-7.3z"/></svg>
+    Flutter Quiz
+  </span>
+  <h1>ຄຳຕອບ ການພັດທະນາ Application ດ້ວຍ Flutter</h1>
+  <p class="sub">ສະຫຼຸບຄຳຕອບ ແລະ ຄຳອະທິບາຍ — ພາກທິດສະດີ 100 ຂໍ້ + ພາກປະຕິບັດ 20 ຂໍ້</p>
+  <div class="stats">
+    <div class="stat"><b>100</b><span>ຂໍ້ເລືອກຕອບ</span></div>
+    <div class="stat"><b>20</b><span>ຂໍ້ປະຕິບັດ</span></div>
+    <div class="stat"><b>9</b><span>ພາກ</span></div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="toolbar-inner">
+    <label class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="ຄົ້ນຫາຄຳຖາມ ຫຼື keyword (ເຊັ່ນ ListView, Drawer)...">
+    </label>
+    <div class="toggle on" id="modeToggle">
+      <span class="switch"></span>
+      <span id="modeLabel">ສະແດງຄຳຕອບ</span>
+    </div>
+  </div>
+</div>
+
+<main id="content"></main>
+<div class="empty" id="empty">ບໍ່ພົບຄຳຖາມທີ່ກົງກັບການຄົ້ນຫາ</div>
+
+<button id="top" aria-label="ກັບຂຶ້ນເທິງ">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<script>
+// ============ DATA ============
+const sections = [
+  { title:"ພື້ນຖານ Widget ແລະ TextField", sub:"ຂໍ້ 1 – 10", items:[
+    {n:1,q:"ListTile ປະກອບດ້ວຍສາມສ່ວນຫຼັກໃດ?",o:["leading, title, trailing","leading, title, actions","trailing, leading, title","trailing, title, actions"],a:0,e:"<b>leading</b> = ສ່ວນຊ້າຍ (ມັກເປັນ Icon/ຮູບ), <b>title</b> = ຂໍ້ຄວາມຫຼັກໃນກາງ, <b>trailing</b> = ສ່ວນຂວາສຸດ."},
+    {n:2,q:"TextEditingController ໃຊ້ຈັບຄູ່ກັບ Widget ໃດ?",o:["Text","Button","TextField","ListView"],a:2,e:"ໃຊ້ຄວບຄຸມ ແລະ ອ່ານຄ່າຂໍ້ຄວາມຂອງ TextField ຜ່ານ <code>controller.text</code>."},
+    {n:3,q:"Event ໃດໃຊ້ກວດສອບ input ທາງ Keyboard ໃນ TextField (ທຸກຄັ້ງທີ່ພິມ)?",o:["onChanged","onSubmitted","onPress","textChange"],a:0,e:"<code>onChanged</code> ຖືກເອີ້ນທຸກໆຄັ້ງທີ່ຄ່າຂໍ້ຄວາມປ່ຽນແປງ."},
+    {n:4,q:"Event ໃດເຮັດວຽກເມື່ອກົດປຸ່ມ Enter?",o:["onChanged","onSubmitted","onPress","textChange"],a:1,e:"<code>onSubmitted</code> ຖືກເອີ້ນເມື່ອກົດ Enter/Done."},
+    {n:5,q:"Super class ສຳລັບການສະແດງຄ່າຄົງທີ່ (Static)?",o:["StatelessWidget","StatefulWidget","MaterialApp","Scaffold"],a:0,e:"StatelessWidget ໃຊ້ກັບໜ້າທີ່ບໍ່ມີການປ່ຽນແປງ state ພາຍໃນ."},
+    {n:6,q:"Widget ຫຼັກໃນການອອກແບບໂຄງສ້າງໜ້າຕ່າງ Application?",o:["StatelessWidget","StatefulWidget","MaterialApp","Scaffold"],a:3,e:"Scaffold ໃຫ້ໂຄງສ້າງພື້ນຖານ Material: appBar, body, drawer, FAB ແລະ ອື່ນໆ."},
+    {n:7,q:"Library Package ສຳລັບ Material Design?",o:["Material.dart","Rendering.dart","http.dart","Container.dart"],a:0,e:"ນຳເຂົ້າດ້ວຍ <code>import 'package:flutter/material.dart';</code>"},
+    {n:8,q:"ຈັດ Widget ຕາມລວງນອນ (Horizontal)?",o:["Columns","Row","Center","Container"],a:1,e:"Row ຈັດ Widget ລູກໆ ຈາກຊ້າຍໄປຂວາ."},
+    {n:9,q:"ຈັດ Widget ຕາມລວງຕັ້ງ (Vertical)?",o:["Columns","Row","Center","Container"],a:0,e:"Column ຈັດ Widget ລູກໆ ຈາກເທິງລົງລຸ່ມ."},
+    {n:10,q:"itemCount ໃນ ListView ໃຊ້ເພື່ອຫຍັງ?",o:["ຈຳນວນລາຍການສະແດງ","ຈຳນວນ ListView","ຈຳນວນຂໍ builder","ຈຳນວນ Content"],a:0,e:"ບອກວ່າຈະສ້າງ item ທັງໝົດຈັກອັນ."},
+  ]},
+  { title:"AppBar, Drawer ແລະ Navigation", sub:"ຂໍ້ 11 – 20", items:[
+    {n:11,q:"Property ໃນ Scaffold ສຳລັບສ້າງເມນູດ້ານຂ້າງ (Side Menu)?",o:["drawer","sideBar","appBar","bottomMenu"],a:0,e:"<code>drawer:</code> ສ້າງເມນູທີ່ເລື່ອນເຂົ້າມາຈາກເບື້ອງຊ້າຍ."},
+    {n:12,q:"Widget ສະແດງຂໍ້ມູນ Profile ໃນ Drawer ໄດ້ສວຍງາມທີ່ສຸດ?",o:["DrawerHeader","UserAccountsDrawerHeader","AccountPicture","ProfileTile"],a:1,e:"ມີຊ່ອງ accountName, accountEmail ແລະ currentAccountPicture ໃຫ້ພ້ອມ."},
+    {n:13,q:"ໃສ່ Icon Menu ໄວ້ເບື້ອງຊ້າຍສຸດຂອງ AppBar ໃຊ້ Property ໃດ?",o:["leading","actions","title","flexibleSpace"],a:0,e:"<code>leading:</code> ຄືສ່ວນຊ້າຍສຸດຂອງ AppBar."},
+    {n:14,q:"ໃສ່ປຸ່ມ Search / Settings ໄວ້ເບື້ອງຂວາຂອງ AppBar ໃຊ້?",o:["leading","actions","title","bottom"],a:1,e:"<code>actions:</code> ຮັບ List ຂອງ Widget ສະແດງເບື້ອງຂວາສຸດ."},
+    {n:15,q:"Widget ສ້າງແຖບເມນູລຸ່ມໜ້າຈໍ?",o:["TabBar","BottomNavigationBar","Footer","BottomAppBar"],a:1,e:"ໃຊ້ກັບ <code>bottomNavigationBar:</code> ຂອງ Scaffold."},
+    {n:16,q:"TabBar ມັກວາງໄວ້ໃນສ່ວນໃດຂອງ AppBar?",o:["title","leading","bottom","flexibleSpace"],a:2,e:"<code>bottom:</code> ຂອງ AppBar ໃຊ້ວາງ TabBar ໄວ້ດ້ານລຸ່ມ."},
+    {n:17,q:"Widget ບັນຈຸເນື້ອຫາຂອງແຕ່ລະ Tab?",o:["TabView","TabBarView","TabContent","TabController"],a:1,e:"TabBarView ສະແດງເນື້ອຫາທີ່ກົງກັບ Tab ທີ່ກຳລັງເລືອກ."},
+    {n:18,q:"ໃຫ້ Title ຢູ່ກາງ AppBar ກຳນົດ centerTitle ເປັນຄ່າໃດ?",o:["false","true","null","center"],a:1,e:"<code>centerTitle: true</code> ຈັດ title ໃຫ້ຢູ່ກາງ."},
+    {n:19,q:"ໃນ BottomNavigationBar, Property ໃດບອກວ່າຕອນນີ້ເລືອກເມນູໃດ?",o:["activeIndex","currentIndex","selectedIndex","itemIndex"],a:1,e:"<code>currentIndex:</code> ກຳນົດ index ຂອງ item ທີ່ກຳລັງເລືອກ."},
+    {n:20,q:"ການໃຊ້ TabBar ຕ້ອງມີ Controller ໃດຄຸມຢູ່ສະເໝີ?",o:["DefaultTabController","TabManager","PageController","ScrollController"],a:0,e:"DefaultTabController ຫຸ້ມ TabBar ກັບ TabBarView ໃຫ້ເຮັດວຽກພ້ອມກັນ."},
+  ]},
+  { title:"Buttons, Icons ແລະ PopupMenu", sub:"ຂໍ້ 21 – 30", items:[
+    {n:21,q:"ElevatedButton ມີລັກສະນະແນວໃດ?",o:["ມີສີພື້ນ ແລະ ມີເງານູນຂຶ້ນ","ມີແຕ່ເສັ້ນຂອບ","ມີແຕ່ຕົວໜັງສື","ເປັນປຸ່ມວົງມົນ"],a:0,e:"ປຸ່ມຍົກນູນ ມີສີພື້ນຫຼັງ ແລະ ເງົາ."},
+    {n:22,q:"IconButton ຕ້ອງການ Parameter ຫຼັກໃດ?",o:["text","icon ແລະ onPressed","label","child"],a:1,e:"<code>icon:</code> ກຳນົດຮູບ, <code>onPressed:</code> ກຳນົດສິ່ງທີ່ເຮັດເມື່ອກົດ."},
+    {n:23,q:"FloatingActionButton (FAB) ມັກໃຊ້ໃນກໍລະນີໃດ?",o:["ເປັນເມນູຫຼັກ","ເປັນປຸ່ມດ່ວນ (ເຊັ່ນ ປຸ່ມເພີ່ມຂໍ້ມູນ +)","ເປັນປຸ່ມ Back","ເປັນປຸ່ມ Logout"],a:1,e:"ປຸ່ມວົງມົນລອຍຢູ່ມຸມຈໍ ສຳລັບ action ສຳຄັນ."},
+    {n:24,q:"Widget ສະແດງເມນູຍ່ອຍເມື່ອກົດປຸ່ມສາມຈຸດ (...) ເທິງ AppBar?",o:["DropdownButton","PopupMenuButton","ListMenu","ContextMenu"],a:1,e:"ສະແດງລາຍການເມນູ pop up ເມື່ອກົດ."},
+    {n:25,q:"Icon Widget ໃຊ້ Parameter ໃດກຳນົດຮູບສັນຍາລັກ?",o:["Icons.name_of_icon","Images.icon","Graphics.icon","Asset.icon"],a:0,e:"ເຊັ່ນ <code>Icon(Icons.home)</code>."},
+    {n:26,q:"ປ່ຽນສີຂອງ Icon ໃຊ້ Property ໃດ?",o:["background","tint","color","style"],a:2,e:"ເຊັ່ນ <code>Icon(Icons.star, color: Colors.red)</code>."},
+    {n:27,q:"ປຸ່ມທີ່ມີທັງ Icon ແລະ ຂໍ້ຄວາມ (Label) ໃນ ElevatedButton ໃຊ້?",o:["ElevatedButton.add()","ElevatedButton.icon()","ElevatedButton.withIcon()","ElevatedButton.label()"],a:1,e:"constructor ນີ້ມີ <code>icon:</code> ແລະ <code>label:</code>."},
+    {n:28,q:"Property ໃນ Button ສຳລັບກຳນົດຟັງຊັນເມື່ອກົດ?",o:["onClick","onTap","onPressed","onSelect"],a:2,e:"ໃນ Flutter ປຸ່ມໃຊ້ <code>onPressed:</code>."},
+    {n:29,q:"PopupMenuItem ໃຊ້ຢູ່ພາຍໃນ Widget ໃດ?",o:["ListView","PopupMenuButton","Dropdown","Column"],a:1,e:"ໃສ່ໃນ <code>itemBuilder:</code> ຂອງ PopupMenuButton."},
+    {n:30,q:"ເຮັດໃຫ້ປຸ່ມກົດບໍ່ໄດ້ (Disabled) ກຳນົດ onPressed ແນວໃດ?",o:["onPressed: () {}","onPressed: null","onPressed: false","onPressed: 0"],a:1,e:"<code>onPressed: null</code> ປຸ່ມຈະ disabled ໂດຍອັດຕະໂນມັດ."},
+  ]},
+  { title:"Image, ListView ແລະ GridView", sub:"ຂໍ້ 31 – 40", items:[
+    {n:31,q:"ສະແດງຮູບຈາກ Folder ໃນ Project ໃຊ້ຄຳສັ່ງໃດ?",o:["Image.asset()","Image.network()","Image.file()","Image.memory()"],a:0,e:"ໃຊ້ກັບຮູບໃນ project ທີ່ປະກາດໃນ pubspec.yaml."},
+    {n:32,q:"Image.network() ໃຊ້ສຳລັບຫຍັງ?",o:["ສະແດງຮູບພາບຈາກ URL ອິນເຕີເນັດ","ສະແດງຮູບຈາກເຄື່ອງ","ສະແດງຮູບຈາກ Database","ສະແດງຮູບຈາກ Memory"],a:0,e:"ໂຫຼດຮູບຈາກ URL ບົນອິນເຕີເນັດ."},
+    {n:33,q:"Widget ສ້າງລາຍການເລື່ອນໄດ້ ທີ່ມີປະສິດທິພາບສູງ?",o:["Column","ListView.builder","SingleChildScrollView","GridView"],a:1,e:"ສ້າງ item ສະເພາະອັນທີ່ສະແດງເທິງຈໍ (lazy) ຈຶ່ງປະຫຍັດ memory."},
+    {n:34,q:"itemBuilder ໃນ ListView.builder ມີໄວ້ເພື່ອຫຍັງ?",o:["ກຳນົດຈຳນວນ Item","ສ້າງ Widget ຂອງແຕ່ລະແຖວຕາມ index","ກຳນົດສີຂອງ List","ຈັດການ Scroll"],a:1,e:"callback ສ້າງ Widget ແຕ່ລະແຖວໂດຍຮັບ <code>index</code> ມາໃຊ້."},
+    {n:35,q:"GridView.builder ໃຊ້ສຳລັບການຈັດຮຽງຂໍ້ມູນແບບໃດ?",o:["ແບບລາຍການແຖວດຽວ","ແບບຕາຕະລາງ (ຫຼາຍຖັນ)","ແບບຊ້ອນກັນ","ແບບວົງມົນ"],a:1,e:"ຈັດ item ເປັນຕາຕະລາງຫຼາຍຖັນ."},
+    {n:36,q:"crossAxisCount ໃນ GridView ໝາຍເຖິງຫຍັງ?",o:["ຈຳນວນຖັນ","ຈຳນວນແຖວ","ໄລຍະຫ່າງ","ຂະໜາດຂອງ Item"],a:0,e:"ບອກວ່າແຕ່ລະແຖວມີຈັກຖັນ (column)."},
+    {n:37,q:"ໃຫ້ ListView ສະແດງຜົນລວງນອນ ຕັ້ງຄ່າໃດ?",o:["direction: horizontal","scrollDirection: Axis.horizontal","layout: horizontal","axis: Axis.horizontal"],a:1,e:"<code>scrollDirection: Axis.horizontal</code>."},
+    {n:38,q:"Widget ເຮັດໃຫ້ຮູບເປັນວົງມົນ (Profile Picture)?",o:["ImageCircle","CircleAvatar","ClipOval","RoundImage"],a:1,e:"CircleAvatar ສ້າງຮູບ profile ວົງມົນໄດ້ງ່າຍ."},
+    {n:39,q:"Property ໃນ Image ກຳນົດການຂະຫຍາຍຮູບໃຫ້ເຕັມກອບ?",o:["size","fit (BoxFit)","scale","align"],a:1,e:"ເຊັ່ນ <code>BoxFit.cover</code>, <code>BoxFit.fill</code>."},
+    {n:40,q:"ໃນ GridView, mainAxisSpacing ໝາຍເຖິງໄລຍະຫ່າງທາງໃດ?",o:["ໄລຍະຫ່າງລະຫວ່າງແຖວ (ລວງຕັ້ງ)","ໄລຍະຫ່າງລະຫວ່າງຖັນ (ລວງນອນ)","ໄລຍະຫ່າງຈາກຂອບ","ໄລຍະຫ່າງພາຍໃນ"],a:0,e:"ສ່ວນ crossAxisSpacing ຄືໄລຍະຫ່າງລະຫວ່າງຖັນ."},
+  ]},
+  { title:"ການຕົບແຕ່ງ ແລະ ການຈັດວາງ", sub:"ຂໍ້ 41 – 50", items:[
+    {n:41,q:"Widget ກຳນົດໄລຍະຫ່າງພາຍໃນ (Inner Space)?",o:["Padding","Margin","SizedBox","Container"],a:0,e:"Padding ໃສ່ໄລຍະຫ່າງພາຍໃນຮອບໆ child."},
+    {n:42,q:"ກຳນົດຂະໜາດ ກວ້າງ/ສູງ ທີ່ແນ່ນອນໃຫ້ Widget ໃຊ້?",o:["AspectRatio","SizedBox","Expanded","Flexible"],a:1,e:"<code>SizedBox(width: 100, height: 50, child: ...)</code>."},
+    {n:43,q:"Property ໃນ Container ສຳລັບໃສ່ສີພື້ນ, ເສັ້ນຂອບ ແລະ ເງົາ?",o:["style","theme","decoration (BoxDecoration)","border"],a:2,e:"ໃຊ້ <code>decoration: BoxDecoration(...)</code>."},
+    {n:44,q:"ມຸມຂອງ Container ມົນ (Rounded Corner) ໃຊ້ Property ໃດ?",o:["shape","borderRadius","circleAngle","borderStyle"],a:1,e:"ໃສ່ໃນ BoxDecoration: <code>borderRadius: BorderRadius.circular(12)</code>."},
+    {n:45,q:"Widget ແບ່ງພື້ນທີ່ທີ່ເຫຼືອໃນ Row/Column ໃຫ້ເຕັມ?",o:["Spacer","Expanded","Wrap","Stack"],a:1,e:"Expanded ບັງຄັບໃຫ້ child ກິນພື້ນທີ່ທີ່ເຫຼືອ."},
+    {n:46,q:"ວາງ Widget ໃຫ້ຊ້ອນທັບກັນ (Overlay) ໃຊ້?",o:["Row","Column","Stack","Flow"],a:2,e:"Stack ໃຫ້ widget ຊ້ອນກັນເປັນຊັ້ນ."},
+    {n:47,q:"ໃນ Stack, Widget ກຳນົດຕຳແໜ່ງ (Top, Left, Right, Bottom) ຂອງລູກ?",o:["Align","Positioned","Padding","Center"],a:1,e:"Positioned ກຳນົດຕຳແໜ່ງ child ພາຍໃນ Stack."},
+    {n:48,q:"ຂໍ້ມູນໃນ Row/Column ຍາວເກີນໜ້າຈໍ (Overflow) ແກ້ໄຂດ້ວຍ?",o:["ListView","SingleChildScrollView","ຖືກທັງ ກ ແລະ ຂ","ບໍ່ມີຂໍ້ຖືກ"],a:2,e:"ໃຊ້ ListView ຫຼື SingleChildScrollView ໃຫ້ເລື່ອນໄດ້."},
+    {n:49,q:"Widget ສຳລັບການກົດ (Tap) ທີ່ບໍ່ມີ Effect ແຕ່ຈັບ Event ໄດ້ຫຼາຍຮູບແບບ?",o:["GestureDetector","InkWell","Button","ActionDetector"],a:0,e:"ຈັບໄດ້ tap, double tap, long press, drag ໂດຍບໍ່ມີ ripple."},
+    {n:50,q:"ຄວາມແຕກຕ່າງລະຫວ່າງ InkWell ແລະ GestureDetector?",o:["InkWell ມີ Ripple Effect (ຄື້ນນ້ຳ) ເມື່ອກົດ, GestureDetector ບໍ່ມີ","GestureDetector ໃຊ້ໄດ້ແຕ່ກັບຮູບ","InkWell ໃຊ້ໄດ້ແຕ່ກັບປຸ່ມ","ບໍ່ມີຄວາມແຕກຕ່າງ"],a:0,e:"InkWell ມີ ripple animation, GestureDetector ບໍ່ມີ."},
+  ]},
+  { title:"ການຈັດການສະຖານະ ແລະ Logic", sub:"ຂໍ້ 51 – 60", items:[
+    {n:51,q:"ຄຳສັ່ງສັ່ງໃຫ້ UI Re-render / ອັບເດດຄ່າໃໝ່ໃນ StatefulWidget?",o:["updateState()","setState()","refresh()","changeState()"],a:1,e:"<code>setState()</code> ບອກ Flutter ໃຫ້ rebuild widget."},
+    {n:52,q:"Lifecycle ໃດເຮັດວຽກພຽງຄັ້ງດຽວເມື່ອ Widget ຖືກສ້າງຂຶ້ນ?",o:["initState()","build()","dispose()","didUpdateWidget()"],a:0,e:"ເໝາະສຳລັບການຕັ້ງຄ່າເລີ່ມຕົ້ນ ເຊັ່ນ ສ້າງ controller."},
+    {n:53,q:"Lifecycle ໃດ Clear ຄ່າ/ປິດການເຮັດວຽກ ກ່ອນ Widget ຖືກທຳລາຍ?",o:["initState()","build()","dispose()","stop()"],a:2,e:"ໃຊ້ປ່ອຍ resource ເຊັ່ນ <code>controller.dispose()</code>."},
+    {n:54,q:"ສັນຍາລັກ ? ຫຼັງປະເພດຂໍ້ມູນ (ເຊັ່ນ String?) ໃນ Dart ໝາຍເຖິງຫຍັງ?",o:["ຂໍ້ມູນທີ່ເປັນຄ່າຫວ່າງ (Empty)","Variable ນັ້ນສາມາດເປັນ Null ໄດ້ (Nullable)","Variable ນັ້ນເປັນຄ່າຄົງທີ່","ເປັນການຖາມຄຳຖາມ"],a:1,e:"<code>?</code> ໝາຍວ່າຕົວປ່ຽນສາມາດເປັນ null ໄດ້."},
+    {n:55,q:"ປະກາດຕົວປ່ຽນທີ່ຄຳນວນຄ່າຄັ້ງດຽວຕອນ Runtime ແລ້ວບໍ່ປ່ຽນອີກ ໃຊ້?",o:["const","final","var","static"],a:1,e:"<code>final</code> ກຳນົດຄ່າຕອນ runtime ໄດ້ ແຕ່ປ່ຽນຄ່າອີກບໍ່ໄດ້ (const ຕ້ອງຮູ້ຄ່າຕັ້ງແຕ່ compile time)."},
+    {n:56,q:"ຟັງຊັນ main() ໃນ Flutter ສຳຄັນແນວໃດ?",o:["ເປັນຈຸດເລີ່ມຕົ້ນ (Entry Point) ຂອງ Program","ເປັນບ່ອນເກັບ Widget ທັງໝົດ","ເປັນບ່ອນປະກາດຕົວປ່ຽນ Global","ໃຊ້ສຳລັບການອອກແບບ UI"],a:0,e:"main() ຄືຈຸດທີ່ໂປຣແກຣມເລີ່ມເຮັດວຽກ."},
+    {n:57,q:"ຄຳສັ່ງ runApp() ໃຊ້ເພື່ອຫຍັງ?",o:["ເພື່ອຕິດຕັ້ງ App","ເພື່ອເລີ່ມຕົ້ນການສະແດງ Widget ຕົວທຳອິດຂຶ້ນຈໍ","ເພື່ອ Restart App","ເພື່ອ Compile Code"],a:1,e:"runApp() ຕິດ widget ຮາກໃສ່ໜ້າຈໍ."},
+    {n:58,q:"Widget ຄຸມ Theme ຂອງ App ທັງໝົດ (ສີ, ຟອນ)?",o:["MaterialApp","Scaffold","ThemeData","AppBuilder"],a:0,e:"MaterialApp ກຳນົດ theme ຜ່ານ Property <code>theme:</code>."},
+    {n:59,q:"debugShowCheckedModeBanner: false ໃຊ້ເພື່ອຫຍັງ?",o:["ເອົາແຖບສີແດງຄຳວ່າ DEBUG ອອກຈາກມຸມຈໍ","ປິດການກວດສອບ Error","ໃຫ້ App ເຮັດວຽກໄວຂຶ້ນ","ຊ່ອນ Code"],a:0,e:"ເຊື່ອງປ້າຍ DEBUG ທີ່ມຸມຂວາເທິງ."},
+    {n:60,q:"Navigator.push() ໃຊ້ສຳລັບຫຍັງ?",o:["ເປີດໜ້າໃໝ່ (Navigation)","ປິດໜ້າປັດຈຸບັນ","ສົ່ງຂໍ້ມູນໄປ Database","ອັບເດດຂໍ້ມູນ"],a:0,e:"ເພີ່ມໜ້າໃໝ່ເຂົ້າ stack ການນຳທາງ."},
+  ]},
+  { title:"ເຈາະເລິກ ListView & GridView", sub:"ຂໍ້ 61 – 70", items:[
+    {n:61,q:"ໃນ ListView.builder, ຖ້າບໍ່ກຳນົດ itemCount ຈະເກີດຫຍັງ?",o:["ສະແດງ 0 ລາຍການ","ສະແດງລາຍການແບບບໍ່ມີສິ້ນສຸດ (Infinite List)","Error ທັນທີ","ສະແດງພຽງ 1 ລາຍການ"],a:1,e:"ບໍ່ໃສ່ itemCount = ສ້າງ item ໄປເລື້ອຍໆ ບໍ່ມີຂອບເຂດ."},
+    {n:62,q:"physics: NeverScrollableScrollPhysics() ໃຊ້ເພື່ອຫຍັງ?",o:["ໃຫ້ Scroll ໄວຂຶ້ນ","ປິດການເລື່ອນ (Scroll) ຂອງ Widget ນັ້ນ","ໃຫ້ Scroll ລື່ນໄຫຼ","ໃຊ້ກັບ Android ເທົ່ານັ້ນ"],a:1,e:"ມັກໃຊ້ເມື່ອ ListView ຊ້ອນຢູ່ໃນ ScrollView ອື່ນ."},
+    {n:63,q:"Widget ຈັດກຸ່ມ Widget ໃຫ້ຂຶ້ນແຖວໃໝ່ອັດຕະໂນມັດເມື່ອພື້ນທີ່ບໍ່ພໍ?",o:["Row","Column","Wrap","Flow"],a:2,e:"Wrap ຍ້າຍ widget ໄປແຖວໃໝ່ເມື່ອບໍ່ພໍ."},
+    {n:64,q:"ListView.separated ຕ່າງຈາກ ListView.builder ແນວໃດ?",o:["ມີ separatorBuilder ທີ່ໃຊ້ສ້າງ Widget ຂັ້ນກາງລະຫວ່າງ Item","ໃຊ້ງານງ່າຍກວ່າ","ໃສ່ຮູບໄດ້","ບໍ່ຕ່າງກັນ"],a:0,e:"ໃສ່ເສັ້ນແບ່ງ (Divider) ລະຫວ່າງແຕ່ລະລາຍການໄດ້."},
+    {n:65,q:"shrinkWrap: true ໃນ ListView ໃຊ້ໃນກໍລະນີໃດ?",o:["ເມື່ອ ListView ຢູ່ພາຍໃນ Widget ທີ່ບໍ່ກຳນົດຂະໜາດ (ເຊັ່ນ Column)","ໃຫ້ຮູບນ້ອຍລົງ","ປະຢັດ Memory","ໃຫ້ Scroll ແນວນອນ"],a:0,e:"ໃຫ້ ListView ກິນຄວາມສູງເທົ່າທີ່ເນື້ອຫາຕ້ອງການ."},
+    {n:66,q:"SliverGridDelegateWithMaxCrossAxisExtent ໃຊ້ກຳນົດ Grid ແບບໃດ?",o:["ກຳນົດຈຳນວນຖັນທີ່ແນ່ນອນ","ກຳນົດຄວາມກວ້າງສູງສຸດຂອງແຕ່ລະ Item (ປັບຕາມຂະໜາດຈໍ)","ກຳນົດສີຂອງ Grid","ກຳນົດໃຫ້ມີພຽງ 1 ຖັນ"],a:1,e:"ຈຳນວນຖັນປັບອັດຕະໂນມັດຕາມຄວາມກວ້າງສູງສຸດທີ່ກຳນົດ."},
+    {n:67,q:"Refresh ຂໍ້ມູນໃນ ListView ໂດຍດຶງໜ້າຈໍລົງ ໃຊ້ Widget ໃດ?",o:["ScrollRefresh","RefreshIndicator","UpdateList","PullToRefresh"],a:1,e:"RefreshIndicator ໃຫ້ pull-to-refresh."},
+    {n:68,q:"Widget ສະແດງ Card ທີ່ມີເງົາ ແລະ ມຸມມົນອັດຕະໂນມັດ?",o:["Card","Container","Paper","Board"],a:0,e:"Card ມີ elevation ແລະ ມຸມມົນໃຫ້ໂດຍບໍ່ຕ້ອງຕັ້ງເອງ."},
+    {n:69,q:"childAspectRatio ໃນ GridView ໃຊ້ກຳນົດຫຍັງ?",o:["ອັດຕາສ່ວນ ຄວາມກວ້າງ ຕໍ່ ຄວາມສູງ ຂອງ Item","ຈຳນວນ Item ທັງໝົດ","ຄວາມໄວ Scroll","ສີພື້ນຫຼັງ"],a:0,e:"ກຳນົດສັດສ່ວນ width:height ຂອງແຕ່ລະ cell."},
+    {n:70,q:"ListTile Property onLongPress ເຮັດວຽກເມື່ອໃດ?",o:["ເມື່ອກົດປຸ່ມເທື່ອດຽວ","ເມື່ອກົດຄ້າງໄວ້","ເມື່ອກົດສອງເທື່ອ","ເມື່ອເລື່ອນຜ່ານ"],a:1,e:"onLongPress ເຮັດວຽກເມື່ອກົດຄ້າງ."},
+  ]},
+  { title:"Advanced UI & Flutter Features", sub:"ຂໍ້ 71 – 100", items:[
+    {n:71,q:"Widget ຫຸ້ມ Widget ອື່ນໃຫ້ເລື່ອນໄດ້ທັງລວງຕັ້ງ ແລະ ແນວນອນ?",o:["ListView","InteractiveViewer","ScrollView","ZoomWidget"],a:1,e:"InteractiveViewer ໃຫ້ pan ແລະ zoom ໄດ້."},
+    {n:72,q:"ໃຊ້ Custom Font ໃນ App ຕ້ອງໄປກຳນົດບ່ອນໃດ?",o:["pubspec.yaml","main.dart","settings.json","fonts.dart"],a:0,e:"ປະກາດ font ໃນ pubspec.yaml."},
+    {n:73,q:"Widget ກວດສອບຂະໜາດໜ້າຈໍ (Responsive Design)?",o:["MediaQuery","LayoutBuilder","ຖືກທັງ ກ ແລະ ຂ","ບໍ່ມີຂໍ້ຖືກ"],a:0,e:"ຕາມເຈ້ຍ key ຄື MediaQuery. ໝາຍເຫດ: LayoutBuilder ກໍໃຊ້ໄດ້, ສະນັ້ນ \"ຖືກທັງສອງ\" ກໍສົມເຫດສົມຜົນ."},
+    {n:74,q:"ປ່ຽນໜ້າໂດຍລຶບໜ້າເກົ່າຖິ້ມ (ເຊັ່ນ Logout) ໃຊ້?",o:["Navigator.pushReplacement()","Navigator.push()","Navigator.pop()","Navigator.remove()"],a:0,e:"ແທນທີ່ໜ້າປັດຈຸບັນ ບໍ່ສາມາດກົດ back ກັບໄປໄດ້."},
+    {n:75,q:"FloatingActionButtonLocation ໃຊ້ສຳລັບຫຍັງ?",o:["ກຳນົດຕຳແໜ່ງຂອງປຸ່ມ FAB (ເຊັ່ນ ກາງຈໍ ຫຼື ຊ້າຍ/ຂວາ)","ກຳນົດສີຂອງປຸ່ມ","ກຳນົດການເຊື່ອມຕໍ່ Database","ກຳນົດ Icon"],a:0,e:"ປ່ຽນທີ່ຕັ້ງຂອງ FAB ໃນ Scaffold."},
+    {n:76,q:"Widget ສະແດງຂໍ້ຄວາມແຈ້ງເຕືອນຊົ່ວຄາວຢູ່ດ້ານລຸ່ມຂອງຈໍ?",o:["AlertDialog","SnackBar","Toast","BottomSheet"],a:1,e:"SnackBar ສະແດງຂໍ້ຄວາມສັ້ນໆ ດ້ານລຸ່ມ ແລ້ວຫາຍໄປ."},
+    {n:77,q:"scaffoldMessenger.of(context).showSnackBar() ແມ່ນຄຳສັ່ງສຳລັບ?",o:["ເປີດ Drawer","ສະແດງ SnackBar","ປ່ຽນໜ້າ App","ສະແດງ Dialog"],a:1,e:"ໃຊ້ສະແດງ SnackBar ຂຶ້ນຈໍ."},
+    {n:78,q:"Widget ສ້າງໜ້າຈໍລໍຖ້າ (Loading) ແບບວົງມົນ?",o:["CircularProgressIndicator","LinearProgressIndicator","LoadingCircle","RefreshProgress"],a:0,e:"ໝູນເປັນວົງມົນ ສະແດງສະຖານະກຳລັງໂຫຼດ."},
+    {n:79,q:"ໃຫ້ຮູບໂຫຼດມາແລ້ວຄ່ອຍໆປາກົດ (Fade In) ໃຊ້?",o:["Image.network","FadeInImage","AnimatedImage","TransitionImage"],a:1,e:"FadeInImage ສະແດງ placeholder ກ່ອນ ແລ້ວ fade ຮູບຈິງເຂົ້າມາ."},
+    {n:80,q:"Widget ສຳລັບເລືອກວັນທີ (Date Picker)?",o:["showDatePicker()","CalendarWidget","DateSelect","PickerDate"],a:0,e:"showDatePicker() ເປີດ dialog ປະຕິທິນໃຫ້ເລືອກວັນທີ."},
+    {n:81,q:"ວິທີໃສ່ເງົາໃຫ້ Container?",o:["boxShadow ພາຍໃນ BoxDecoration","elevation ພາຍໃນ Container","shadowColor","borderShadow"],a:0,e:"ໃສ່ <code>boxShadow: [BoxShadow(...)]</code> ໃນ BoxDecoration."},
+    {n:82,q:"Widget ເປັນ Placeholder ໃນລະຫວ່າງລໍຖ້າຮູບໂຫຼດ?",o:["ErrorWidget","Placeholder ຫຼື Container ທີ່ມີສີ","LoadingWidget","ImageHolder"],a:1,e:"ໃຊ້ Placeholder ຫຼື Container ມີສີ ໄວ້ກ່ອນຮູບໂຫຼດເສັດ."},
+    {n:83,q:"ສ້າງ TabBar ຢູ່ດ້ານລຸ່ມຂອງ AppBar ໃຊ້ Property ໃດ?",o:["bottom","title","actions","flexibleSpace"],a:0,e:"<code>bottom:</code> ຂອງ AppBar."},
+    {n:84,q:"mainAxisAlignment: MainAxisAlignment.center ໃນ Column ຈັດ Widget ແນວໃດ?",o:["ຈັດໃຫ້ຢູ່ກາງຕາມລວງຕັ້ງ","ຈັດໃຫ້ຢູ່ກາງຕາມລວງນອນ","ຈັດໃຫ້ຢູ່ຊ້າຍສຸດ","ຈັດໃຫ້ເຕັມຈໍ"],a:0,e:"ໃນ Column, main axis ຄືແນວຕັ້ງ ສະນັ້ນ center = ກາງແນວຕັ້ງ."},
+    {n:85,q:"crossAxisAlignment: CrossAxisAlignment.start ໃນ Row ຈັດ Widget ແນວໃດ?",o:["ຈັດໃຫ້ຢູ່ເທິງສຸດຂອງແຖວ","ຈັດໃຫ້ຢູ່ຊ້າຍສຸດຂອງແຖວ","ຈັດໃຫ້ຢູ່ລຸ່ມສຸດ","ຈັດໃຫ້ຢູ່ກາງ"],a:0,e:"ໃນ Row, cross axis ຄືແນວຕັ້ງ ສະນັ້ນ start = ເທິງສຸດ."},
+    {n:86,q:"Widget ສ້າງ Form ແລະ ກວດສອບຂໍ້ມູນ (Validation)?",o:["Form","TextField","InputGroup","Validator"],a:0,e:"Form ຫຸ້ມ field ຕ່າງໆ ເພື່ອ validate ພ້ອມກັນ."},
+    {n:87,q:"GlobalKey&lt;FormState&gt; ມີໄວ້ເພື່ອຫຍັງ?",o:["ເຂົ້າເຖິງ ແລະ ກວດສອບ (Validate) ສະຖານະຂອງ Form","ປ່ຽນສີ Form","ເກັບຂໍ້ມູນ User","ໃຊ້ແທນ Controller"],a:0,e:"ເຊັ່ນ <code>_formKey.currentState!.validate()</code>."},
+    {n:88,q:"Widget ສະແດງ Dialog ເຕືອນຢູ່ກາງໜ້າຈໍ?",o:["AlertDialog","SimpleDialog","SnackBar","ModalSheet"],a:0,e:"AlertDialog ສະແດງ pop-up ກາງຈໍພ້ອມປຸ່ມ action."},
+    {n:89,q:"showModalBottomSheet() ໃຊ້ສຳລັບຫຍັງ?",o:["ສະແດງເມນູ/ຂໍ້ມູນທີ່ເລື່ອນຂຶ້ນມາຈາກດ້ານລຸ່ມຂອງຈໍ","ສະແດງ Dialog ກາງຈໍ","ສະແດງແຖບດ້ານຂ້າງ","ປິດ App"],a:0,e:"sheet ເລື່ອນຂຶ້ນຈາກລຸ່ມ."},
+    {n:90,q:"Widget ເຮັດໃຫ້ Child ຂະຫຍາຍຕົວຕາມອັດຕາສ່ວນທີ່ກຳນົດ?",o:["Flexible","Expanded","Spacer","ConstrainedBox"],a:0,e:"Flexible ໃຊ້ flex ແບ່ງພື້ນທີ່ ໂດຍບໍ່ບັງຄັບເຕັມ."},
+    {n:91,q:"Flexible ຕ່າງຈາກ Expanded ແນວໃດ?",o:["Flexible ບໍ່ບັງຄັບໃຫ້ Child ຕ້ອງເຕັມພື້ນທີ່ (ຂຶ້ນກັບ fit parameter)","Expanded ໃຊ້ໄດ້ແຕ່ກັບ Row","Flexible ໃຊ້ໄດ້ແຕ່ກັບ Column","ບໍ່ຕ່າງກັນ"],a:0,e:"Expanded = Flexible ທີ່ fit: FlexFit.tight (ບັງຄັບເຕັມ)."},
+    {n:92,q:"physics: BouncingScrollPhysics() ເໝາະກັບ Platform ໃດ?",o:["Android","iOS","Web","Desktop"],a:1,e:"ໃຫ້ການເລື່ອນເດັ້ງໆ ແບບ iOS."},
+    {n:93,q:"Widget ຈັດການກັບ SafeArea (ຫຼີກລ່ຽງສ່ວນ ຕິ່ງ/notch ຂອງໜ້າຈໍ)?",o:["SafeArea","Padding","Margin","ScreenBoundary"],a:0,e:"SafeArea ດັນເນື້ອຫາໃຫ້ພົ້ນ notch, status bar."},
+    {n:94,q:"ໃນ GridView, Property ໃຫ້ List ເລື່ອນໄດ້ທັງສອງລວງ?",o:["ປົກກະຕິ GridView ເຮັດບໍ່ໄດ້ (ຕ້ອງໃຊ້ CustomScrollView)","scrollDirection: Axis.both","twoWayScroll: true","multiDirection: true"],a:0,e:"GridView ປົກກະຕິເລື່ອນໄດ້ທິດດຽວ."},
+    {n:95,q:"Widget ເຮັດ Animation ແບບ Hero (ຮູບເຄື່ອນຂ້າມໜ້າ)?",o:["Hero","AnimationWidget","ImageTransition","PageRoute"],a:0,e:"Hero ສ້າງ shared element transition ລະຫວ່າງສອງໜ້າ."},
+    {n:96,q:"ໃຫ້ Widget ມີຄວາມໂປ່ງໃສ (Transparency) ໃຊ້?",o:["Opacity","Visibility","Transparent","Color.alpha"],a:0,e:"Opacity ກຳນົດຄ່າຄວາມໂປ່ງໃສ 0.0–1.0."},
+    {n:97,q:"ຄວາມແຕກຕ່າງລະຫວ່າງ Opacity ແລະ Visibility?",o:["Opacity ຍັງຈອງພື້ນທີ່ໄວ້, Visibility (false) ສາມາດເອົາພື້ນທີ່ອອກໄດ້","Opacity ໃຊ້ກັບຮູບເທົ່ານັ້ນ","Visibility ໃຊ້ກັບປຸ່ມເທົ່ານັ້ນ","ບໍ່ມີຄວາມແຕກຕ່າງ"],a:0,e:"Opacity ຍັງກິນພື້ນທີ່; Visibility(false) ສາມາດເອົາ widget ອອກໝົດໄດ້."},
+    {n:98,q:"Widget ແບ່ງໜ້າຈໍ (Page Layout) ແບບເລື່ອນຊ້າຍ-ຂວາ (Slider)?",o:["PageView","ListView","TabBarView","HorizontalScroll"],a:0,e:"PageView ສະແດງເທື່ອລະໜ້າ ປັດຊ້າຍ-ຂວາໄດ້."},
+    {n:99,q:"AspectRatio ໃຊ້ເພື່ອຫຍັງ?",o:["ບັງຄັບໃຫ້ Widget ມີອັດຕາສ່ວນ ກວ້າງ:ສູງ ຕາມທີ່ກຳນົດ","ປ່ຽນສີ Widget","ເຮັດໃຫ້ Widget ມົນ","ກຳນົດຟອນ"],a:0,e:"ຮັກສາສັດສ່ວນ width:height ໃຫ້ຄົງທີ່."},
+    {n:100,q:"ໃນ CustomScrollView, Widget ຍ່ອຍໆທີ່ຢູ່ພາຍໃນເອີ້ນວ່າຫຍັງ?",o:["Widgets","Slivers","ScrollItems","Fragments"],a:1,e:"ເຊັ່ນ SliverList, SliverGrid, SliverAppBar."},
+  ]},
+];
+
+const practical = [
+  {n:1,q:'ສ້າງ AppBar ທີ່ມີຂໍ້ຄວາມ "My App" ແລະ Icon Menu ຢູ່ເບື້ອງຊ້າຍ',
+   code:`<span class="ty">AppBar</span>(
+  title: <span class="kw">const</span> <span class="ty">Text</span>(<span class="st">'My App'</span>),
+  leading: <span class="ty">IconButton</span>(
+    icon: <span class="kw">const</span> <span class="ty">Icon</span>(Icons.menu),
+    onPressed: () {
+      <span class="cm">// ເປີດ Drawer ຫຼື action ອື່ນ</span>
+    },
+  ),
+)`},
+  {n:2,q:'Syntax Image.asset ດຶງຮູບຈາກ assets/logo.png',
+   code:`<span class="ty">Image</span>.<span class="fn">asset</span>(<span class="st">'assets/logo.png'</span>)`,
+   note:`ຢ່າລືມປະກາດໃນ <code>pubspec.yaml</code>:<br><code>flutter: → assets: → - assets/logo.png</code>`},
+  {n:3,q:'ElevatedButton ກົດແລ້ວ Print "Hello Flutter"',
+   code:`<span class="ty">ElevatedButton</span>(
+  onPressed: () {
+    <span class="fn">print</span>(<span class="st">'Hello Flutter'</span>);
+  },
+  child: <span class="kw">const</span> <span class="ty">Text</span>(<span class="st">'ກົດທີ່ນີ້'</span>),
+)`},
+  {n:4,q:'ໂຄງສ້າງ ListView.builder ສະແດງລາຍຊື່ 5 ລາຍການ',
+   code:`<span class="kw">final</span> <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; names = [<span class="st">'ກ້ອນ'</span>, <span class="st">'ນ້ອຍ'</span>, <span class="st">'ດາວ'</span>, <span class="st">'ໂພ'</span>, <span class="st">'ໝາຍ'</span>];
+
+<span class="ty">ListView</span>.<span class="fn">builder</span>(
+  itemCount: names.length, <span class="cm">// = 5</span>
+  itemBuilder: (context, index) {
+    <span class="kw">return</span> <span class="ty">ListTile</span>(
+      leading: <span class="kw">const</span> <span class="ty">Icon</span>(Icons.person),
+      title: <span class="ty">Text</span>(names[index]),
+    );
+  },
+)`},
+  {n:5,q:'ຄວາມແຕກຕ່າງລະຫວ່າງ Row ແລະ Column',
+   note:`<b>Row</b> ຈັດ widget ໃນແນວ <b>ນອນ</b> (ຊ້າຍ→ຂວາ): main axis = ແນວນອນ, cross axis = ແນວຕັ້ງ.<br><b>Column</b> ຈັດ widget ໃນແນວ <b>ຕັ້ງ</b> (ເທິງ→ລຸ່ມ): main axis = ແນວຕັ້ງ, cross axis = ແນວນອນ.<br>ສະນັ້ນ <code>mainAxisAlignment</code> ກັບ <code>crossAxisAlignment</code> ໃຫ້ຜົນຕ່າງກັນ ເພາະທິດທາງ axis ສະຫຼັບກັນ.`},
+  {n:6,q:'ສ້າງ Drawer ພື້ນຖານທີ່ມີ UserAccountsDrawerHeader',
+   code:`<span class="ty">Drawer</span>(
+  child: <span class="ty">ListView</span>(
+    padding: EdgeInsets.zero,
+    children: [
+      <span class="kw">const</span> <span class="ty">UserAccountsDrawerHeader</span>(
+        accountName: <span class="ty">Text</span>(<span class="st">'Somchai'</span>),
+        accountEmail: <span class="ty">Text</span>(<span class="st">'somchai@email.com'</span>),
+        currentAccountPicture: <span class="ty">CircleAvatar</span>(
+          backgroundImage: <span class="ty">AssetImage</span>(<span class="st">'assets/profile.png'</span>),
+        ),
+      ),
+      <span class="ty">ListTile</span>(
+        leading: <span class="kw">const</span> <span class="ty">Icon</span>(Icons.home),
+        title: <span class="kw">const</span> <span class="ty">Text</span>(<span class="st">'Home'</span>),
+        onTap: () {},
+      ),
+    ],
+  ),
+)`},
+  {n:7,q:'ວິທີປ່ຽນສີພື້ນຫຼັງຂອງ Scaffold',
+   code:`<span class="ty">Scaffold</span>(
+  backgroundColor: Colors.blue[<span class="st">50</span>],
+  body: <span class="kw">const</span> <span class="ty">Center</span>(child: <span class="ty">Text</span>(<span class="st">'ສະບາຍດີ'</span>)),
+)`,
+   note:`ໃຊ້ Property <code>backgroundColor</code> ຂອງ Scaffold.`},
+  {n:8,q:'TextField ມີ Decoration ໃສ່ HintText ວ່າ "Enter Email"',
+   code:`<span class="ty">TextField</span>(
+  decoration: <span class="ty">InputDecoration</span>(
+    hintText: <span class="st">'Enter Email'</span>,
+    border: <span class="ty">OutlineInputBorder</span>(
+      borderRadius: <span class="ty">BorderRadius</span>.<span class="fn">circular</span>(<span class="st">8</span>),
+    ),
+    prefixIcon: <span class="kw">const</span> <span class="ty">Icon</span>(Icons.email),
+  ),
+)`},
+  {n:9,q:'ການໃຊ້ IconButton ຮ່ວມກັບ onPressed',
+   code:`<span class="ty">IconButton</span>(
+  icon: <span class="kw">const</span> <span class="ty">Icon</span>(Icons.favorite),
+  color: Colors.red,
+  onPressed: () {
+    <span class="fn">print</span>(<span class="st">'ກົດ Icon ແລ້ວ'</span>);
+  },
+)`},
+  {n:10,q:'ສ້າງ BottomNavigationBar ມີ 2 ເມນູ: Home ແລະ Settings',
+   code:`<span class="kw">int</span> _currentIndex = <span class="st">0</span>;
+
+<span class="ty">BottomNavigationBar</span>(
+  currentIndex: _currentIndex,
+  onTap: (index) {
+    <span class="fn">setState</span>(() {
+      _currentIndex = index;
+    });
+  },
+  items: <span class="kw">const</span> [
+    <span class="ty">BottomNavigationBarItem</span>(
+      icon: <span class="ty">Icon</span>(Icons.home), label: <span class="st">'Home'</span>),
+    <span class="ty">BottomNavigationBarItem</span>(
+      icon: <span class="ty">Icon</span>(Icons.settings), label: <span class="st">'Settings'</span>),
+  ],
+)`},
+  {n:11,q:'ການໃຊ້ GridView.builder ແບບ 3 ຖັນ',
+   code:`<span class="ty">GridView</span>.<span class="fn">builder</span>(
+  itemCount: <span class="st">9</span>,
+  gridDelegate: <span class="kw">const</span> <span class="ty">SliverGridDelegateWithFixedCrossAxisCount</span>(
+    crossAxisCount: <span class="st">3</span>,      <span class="cm">// 3 ຖັນ</span>
+    crossAxisSpacing: <span class="st">8</span>,
+    mainAxisSpacing: <span class="st">8</span>,
+  ),
+  itemBuilder: (context, index) {
+    <span class="kw">return</span> <span class="ty">Container</span>(
+      color: Colors.teal,
+      child: <span class="ty">Center</span>(child: <span class="ty">Text</span>(<span class="st">'Item \$index'</span>)),
+    );
+  },
+)`},
+  {n:12,q:'ການໃຊ້ Expanded ພາຍໃນ Row ມີປະໂຫຍດແນວໃດ?',
+   note:`Expanded ບັງຄັບໃຫ້ child "ກິນ" ພື້ນທີ່ທີ່ເຫຼືອໃນ Row ໃຫ້ເຕັມ. ຖ້າມີຫຼາຍ Expanded ມັນຈະແບ່ງພື້ນທີ່ຕາມຄ່າ <code>flex</code>. ປະໂຫຍດ: ກັນ overflow ແລະ ແບ່ງພື້ນທີ່ສົມສ່ວນໂດຍບໍ່ຕ້ອງກຳນົດ pixel.`,
+   code:`<span class="ty">Row</span>(
+  children: [
+    <span class="ty">Expanded</span>(flex: <span class="st">2</span>, child: <span class="ty">Container</span>(color: Colors.red, height: <span class="st">50</span>)),
+    <span class="ty">Expanded</span>(flex: <span class="st">1</span>, child: <span class="ty">Container</span>(color: Colors.blue, height: <span class="st">50</span>)),
+  ],
+)`},
+  {n:13,q:'ListTile ທີ່ມີ Icon ຢູ່ທາງໜ້າ ແລະ ຂໍ້ຄວາມຢູ່ທາງກາງ',
+   code:`<span class="ty">ListTile</span>(
+  leading: <span class="kw">const</span> <span class="ty">Icon</span>(Icons.star),
+  title: <span class="kw">const</span> <span class="ty">Text</span>(<span class="st">'ລາຍການທີ່ 1'</span>),
+)`},
+  {n:14,q:'ການເຮັດວຽກຂອງ itemBuilder ໃນ ListView',
+   note:`<code>itemBuilder</code> ເປັນ callback ທີ່ Flutter ເອີ້ນໃຫ້ສ້າງ Widget ຂອງ <b>ແຕ່ລະແຖວ</b> ໂດຍສົ່ງ <code>index</code> ມາໃຫ້. ມັນຖືກເອີ້ນສະເພາະ item ທີ່ກຳລັງສະແດງເທິງຈໍ (lazy build) ຈຶ່ງປະຫຍັດ memory ແລະ ເລື່ອນໄດ້ລື່ນ. ໃນແຕ່ລະຄັ້ງເຮົາໃຊ້ <code>index</code> ໄປດຶງຂໍ້ມູນຈາກ List ມາສະແດງ.`},
+  {n:15,q:'ສະແດງ Icon ຂະໜາດ 50 ແລະ ເປັນສີແດງ',
+   code:`<span class="ty">Icon</span>(
+  Icons.favorite,
+  size: <span class="st">50</span>,
+  color: Colors.red,
+)`},
+  {n:16,q:'Container ກວ້າງ 100, ສູງ 100 ແລະ ມີຂອບມົນ (BorderRadius)',
+   code:`<span class="ty">Container</span>(
+  width: <span class="st">100</span>,
+  height: <span class="st">100</span>,
+  decoration: <span class="ty">BoxDecoration</span>(
+    color: Colors.green,
+    borderRadius: <span class="ty">BorderRadius</span>.<span class="fn">circular</span>(<span class="st">20</span>),
+  ),
+)`},
+  {n:17,q:'ຈັດຂໍ້ຄວາມໃຫ້ຢູ່ກາງຈໍ (Center) ໃຊ້ Widget ໃດຫຸ້ມ?',
+   note:`ໃຊ້ Widget <b>Center</b> ຫຸ້ມ:`,
+   code:`<span class="ty">Center</span>(
+  child: <span class="ty">Text</span>(<span class="st">'ຢູ່ກາງຈໍ'</span>),
+)`},
+  {n:18,q:'PopupMenuButton ທີ່ມີຕົວເລືອກ "Edit" ແລະ "Delete"',
+   code:`<span class="ty">PopupMenuButton</span>&lt;<span class="ty">String</span>&gt;(
+  onSelected: (value) {
+    <span class="fn">print</span>(<span class="st">'ເລືອກ: \$value'</span>);
+  },
+  itemBuilder: (context) =&gt; <span class="kw">const</span> [
+    <span class="ty">PopupMenuItem</span>(value: <span class="st">'edit'</span>, child: <span class="ty">Text</span>(<span class="st">'Edit'</span>)),
+    <span class="ty">PopupMenuItem</span>(value: <span class="st">'delete'</span>, child: <span class="ty">Text</span>(<span class="st">'Delete'</span>)),
+  ],
+)`},
+  {n:19,q:'ການໃຊ້ TabBarView ຮ່ວມກັບ DefaultTabController',
+   code:`<span class="ty">DefaultTabController</span>(
+  length: <span class="st">2</span>,
+  child: <span class="ty">Scaffold</span>(
+    appBar: <span class="ty">AppBar</span>(
+      bottom: <span class="kw">const</span> <span class="ty">TabBar</span>(
+        tabs: [
+          <span class="ty">Tab</span>(text: <span class="st">'ໜ້າ 1'</span>, icon: <span class="ty">Icon</span>(Icons.home)),
+          <span class="ty">Tab</span>(text: <span class="st">'ໜ້າ 2'</span>, icon: <span class="ty">Icon</span>(Icons.settings)),
+        ],
+      ),
+    ),
+    body: <span class="kw">const</span> <span class="ty">TabBarView</span>(
+      children: [
+        <span class="ty">Center</span>(child: <span class="ty">Text</span>(<span class="st">'ເນື້ອຫາ Tab 1'</span>)),
+        <span class="ty">Center</span>(child: <span class="ty">Text</span>(<span class="st">'ເນື້ອຫາ Tab 2'</span>)),
+      ],
+    ),
+  ),
+)`,
+   note:`<code>length</code> ຕ້ອງເທົ່າກັບຈຳນວນ Tab ໃນ TabBar ແລະ child ໃນ TabBarView.`},
+  {n:20,q:'ຮັບຄ່າຈາກ TextField ໂດຍໃຊ້ controller',
+   code:`<span class="kw">final</span> <span class="ty">TextEditingController</span> _controller = <span class="ty">TextEditingController</span>();
+
+<span class="cm">// ໃນ build():</span>
+<span class="ty">TextField</span>(controller: _controller)
+
+<span class="ty">ElevatedButton</span>(
+  onPressed: () {
+    <span class="ty">String</span> value = _controller.text; <span class="cm">// ດຶງຄ່າທີ່ພິມ</span>
+    <span class="fn">print</span>(<span class="st">'ຄ່າທີ່ໄດ້: \$value'</span>);
+  },
+  child: <span class="kw">const</span> <span class="ty">Text</span>(<span class="st">'ສົ່ງ'</span>),
+)
+
+<span class="cm">// ຢ່າລືມ dispose:</span>
+<span class="kw">void</span> <span class="fn">dispose</span>() {
+  _controller.<span class="fn">dispose</span>();
+  <span class="kw">super</span>.<span class="fn">dispose</span>();
+}`},
+];
+
+// ============ RENDER ============
+const KEYS = ['ກ','ຂ','ຄ','ງ'];
+const content = document.getElementById('content');
+let html = '';
+let secIdx = 0;
+
+for(const s of sections){
+  secIdx++;
+  html += `<section class="section" data-sec>
+    <div class="section-head">
+      <div class="section-num">${String(secIdx).padStart(2,'0')}</div>
+      <h2>${s.title}<small>${s.sub}</small></h2>
+    </div>`;
+  for(const it of s.items){
+    let opts = it.o.map((o,i)=>`<li class="${i===it.a?'correct':''}"><span class="key">${KEYS[i]}.</span><span>${o}</span></li>`).join('');
+    html += `<div class="q" data-q data-text="${(it.q+' '+it.o.join(' ')).toLowerCase()}">
+      <div class="q-head">
+        <span class="q-no">${it.n}</span>
+        <span class="q-text">${it.q}</span>
+      </div>
+      <ul class="opts">${opts}</ul>
+      <div class="tap-hint">👆 ແຕະບັດເພື່ອເບິ່ງຄຳຕອບ</div>
+      <div class="explain">${it.e}</div>
+    </div>`;
+  }
+  html += `</section>`;
+}
+
+// practical
+html += `<section class="section" data-sec>
+  <div class="section-head">
+    <div class="section-num">P</div>
+    <h2>ພາກປະຕິບັດ (Practical)<small>20 ຂໍ້ — ການຂຽນ ແລະ ວິເຄາະ Code</small></h2>
+  </div>`;
+for(const p of practical){
+  let body = '';
+  if(p.note) body += `<div class="note">${p.note}</div>`;
+  if(p.code) body += `<pre>${p.code}</pre>`;
+  html += `<div class="q practical" data-q data-text="${p.q.toLowerCase()}">
+    <div class="q-head">
+      <span class="q-no">${p.n}</span>
+      <span class="q-text">${p.q}</span>
+    </div>
+    <div class="tap-hint">👆 ແຕະບັດເພື່ອເບິ່ງ Code</div>
+    <div class="answer">${body}</div>
+  </div>`;
+}
+html += `</section>
+<div class="footnote"><b>ໝາຍເຫດ:</b> ຄຳຕອບພາກເລືອກຕອບອີງຕາມ key ໃນໄຟລ໌ PDF. ສຳລັບຂໍ້ 73 ມີຄວາມເປັນໄປໄດ້ສອງຄຳຕອບ (MediaQuery ຫຼື ທັງສອງ) — ໃຫ້ຍຶດຕາມ key ຂອງຜູ້ສອນ.</div>`;
+
+content.innerHTML = html;
+
+// ============ INTERACTIONS ============
+const root = content;
+const modeToggle = document.getElementById('modeToggle');
+const modeLabel = document.getElementById('modeLabel');
+let revealAll = true;
+
+function applyReveal(){
+  document.querySelectorAll('.q').forEach(q=>{
+    if(revealAll) q.classList.add('reveal');
+    else q.classList.remove('reveal');
+  });
+  modeToggle.classList.toggle('on', revealAll);
+  modeLabel.textContent = revealAll ? 'ສະແດງຄຳຕອບ' : 'ໂໝດທົບທວນ';
+}
+applyReveal();
+
+modeToggle.addEventListener('click', ()=>{
+  revealAll = !revealAll;
+  applyReveal();
+});
+
+// tap a single card to reveal (works in review mode)
+root.addEventListener('click', e=>{
+  const q = e.target.closest('.q');
+  if(!q) return;
+  if(!revealAll) q.classList.toggle('reveal');
+});
+
+// search
+const search = document.getElementById('search');
+const empty = document.getElementById('empty');
+search.addEventListener('input', ()=>{
+  const term = search.value.trim().toLowerCase();
+  let anyVisible = false;
+  document.querySelectorAll('[data-q]').forEach(q=>{
+    const match = !term || q.dataset.text.includes(term);
+    q.style.display = match ? '' : 'none';
+    if(match) anyVisible = true;
+  });
+  document.querySelectorAll('[data-sec]').forEach(sec=>{
+    const visible = [...sec.querySelectorAll('[data-q]')].some(q=>q.style.display!=='none');
+    sec.style.display = visible ? '' : 'none';
+  });
+  empty.style.display = anyVisible ? 'none' : 'block';
+});
+
+// back to top
+const topBtn = document.getElementById('top');
+window.addEventListener('scroll', ()=>{
+  topBtn.classList.toggle('show', window.scrollY > 600);
+});
+topBtn.addEventListener('click', ()=>window.scrollTo({top:0,behavior:'smooth'}));
+</script>
+</body>
+</html>
